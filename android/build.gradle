@@ -55,3 +55,32 @@ android {
         implementation "com.salesforce.marketingcloud:marketingcloudsdk:$marketingcloud_sdk_version"
     }
 }
+
+gradle.projectsEvaluated {
+    // Disable Dokka tasks (causing ASM9 error)
+    tasks.findAll { it.name.toLowerCase().contains("dokka") }.each { t ->
+        t.enabled = false
+    }
+    // For javadoc tasks, create an empty jar if needed so publication doesn't fail
+    tasks.findAll { it.name.toLowerCase().contains("javadoc") }.each { t ->
+        t.enabled = false
+        t.doLast {
+            def outputFile = null
+            if (t.hasProperty('archivePath')) {
+                outputFile = t.archivePath
+            } else if (t.hasProperty('destinationDir') && t.hasProperty('archiveName')) {
+                outputFile = new File(t.destinationDir, t.archiveName)
+            }
+            if (outputFile != null && !outputFile.exists()) {
+                outputFile.parentFile.mkdirs()
+                ant.jar(destfile: outputFile)
+            }
+        }
+    }
+    // Also, create the expected debug-javadoc.jar if it doesn't exist (for publication)
+    def javadocJarPath = file("${buildDir}/intermediates/java_doc_jar/debug/debug-javadoc.jar")
+    if (!javadocJarPath.exists()) {
+        javadocJarPath.parentFile.mkdirs()
+        ant.jar(destfile: javadocJarPath)
+    }
+}
