@@ -78,9 +78,15 @@ gradle.projectsEvaluated {
         }
     }
     // Also, create the expected debug-javadoc.jar if it doesn't exist (for publication)
-    def javadocJarPath = file("${buildDir}/intermediates/java_doc_jar/debug/debug-javadoc.jar")
-    if (!javadocJarPath.exists()) {
-        javadocJarPath.parentFile.mkdirs()
-        ant.jar(destfile: javadocJarPath)
+    def debugJavadocJarPath = file("${buildDir}/intermediates/java_doc_jar/debug/debug-javadoc.jar")
+    if (!debugJavadocJarPath.exists()) {
+        debugJavadocJarPath.parentFile.mkdirs()
+        ant.jar(destfile: debugJavadocJarPath)
+    }
+    // Also, create the expected release-javadoc.jar if it doesn't exist (for publication)
+    def releaseJavadocJarPath = file("${buildDir}/intermediates/java_doc_jar/release/release-javadoc.jar")
+    if (!releaseJavadocJarPath.exists()) {
+        releaseJavadocJarPath.parentFile.mkdirs()
+        ant.jar(destfile: releaseJavadocJarPath)
     }
 }
